@@ -28,7 +28,7 @@ import {
   showSubscriptionRequiredMessage
 } from '../lib/paymentHandlers.js';
 import { isSubActive } from '../lib/subscriptionService.js';
-import { getUserAppData as getUserData, saveUserAppData as saveUserData } from '../lib/storage.js';
+import { getUserAppData as getUserData, saveUserAppData as saveUserData, getDbStatus } from '../lib/storage.js';
 
 
 // ─── HELPERS ──────────────────────────────────────────────────
@@ -560,6 +560,26 @@ export default async function webhookHandler(req, res) {
       }
       return res.status(200).send('OK');
     }
+
+    // ── /status & /db (DATABASE DIAGNOSTICS) ──────────────────
+    if (text === '/status' || text === '/db') {
+      const dbStatus = await getDbStatus();
+      if (dbStatus.connected) {
+        await sendMessage(chatId, `🟢 <b>BAZA HOLATI: FAOL ✅</b>\n\n<b>Turi:</b> ${dbStatus.type}\n\n✨ Barcha xarajatlar, vazifalar va obunalar Vercel KV bazasida abadiy saqlanmoqda.`);
+      } else {
+        await sendMessage(chatId,
+          `🔴 <b>BAZA HOLATI: VAQTINCHALIK RAM ⚠️</b>\n\n` +
+          `⚠️ <b>DIQQAT:</b> Vercel KV bazasi loyihaga ulanmagan!\n` +
+          `<b>Sabab:</b> <code>${escapeHtml(dbStatus.reason)}</code>\n\n` +
+          `📌 <b>Ma'lumotlar o'chib ketmasligi uchun shuni bajaring:</b>\n` +
+          `1️⃣ <a href="https://vercel.com">Vercel.com</a> Dashboardga kiring\n` +
+          `2️⃣ Loyihangiz (<b>bot</b>) -> <b>Storage</b> bo'limini tanlang\n` +
+          `3️⃣ <b>Connect Store</b> -> <b>KV (Redis)</b> ni tanlab <b>Connect</b> tugmasini bosing!`
+        );
+      }
+      return res.status(200).send('OK');
+    }
+
 
     // ── OBUNA MENYUSI TUGMASI ────────────────────────────────
     if (text === '💳 Obuna' || text === '💳 Obunani ko\'rish' || text === '/sub') {
