@@ -54,7 +54,8 @@ const KB_MAIN = {
     ['💸 Harajat Qo\'shish', '✅ Vazifa Qo\'shish'],
     ['📊 Kunlik Hisobot',    '📋 Vazifalar Ro\'yxati'],
     ['💰 Balans',            '📈 Statistika'],
-    ['🗂 Harajatlar Tarixi', '💳 Obuna']
+    ['🗂 Harajatlar Tarixi', '💳 Obuna'],
+    ['⚙️ Baza Holati']
   ],
   resize_keyboard: true,
   persistent: true
@@ -562,7 +563,7 @@ export default async function webhookHandler(req, res) {
     }
 
     // ── /status & /db (DATABASE DIAGNOSTICS) ──────────────────
-    if (text === '/status' || text === '/db') {
+    if (text === '/status' || text === '/db' || text === '⚙️ Baza Holati') {
       const dbStatus = await getDbStatus();
       if (dbStatus.connected) {
         await sendMessage(chatId, `🟢 <b>BAZA HOLATI: FAOL ✅</b>\n\n<b>Turi:</b> ${dbStatus.type}\n\n✨ Barcha xarajatlar, vazifalar va obunalar Vercel KV bazasida abadiy saqlanmoqda.`);
